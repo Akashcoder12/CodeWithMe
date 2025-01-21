@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+            background-color: rgba(0,0,0,0.3);
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            justify-content: center;
+            
+        }
+
+        h1{
+           text-decoration: underline;
+           text-shadow: 0 2px 4px white;
+        } 
+    .app{
+        text-align: center;
+        width: 300px;
+        padding: 20px;
+        background-color: rgba(0,0,0,0.3);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin-top: 10%;
+        border-radius: 5px;
+    }
+    .search-box{
+        margin-bottom: 20px;
+
+    }
+
+
+    #city{
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        border:1px solid black;
+    
+    }
+
+    #search-btn{
+        padding: 10px;
+        border:none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .weather-info{
+        margin-top: 20px;
+
+    }
+
+
+    .weather-info p{
+        margin: 5px 0;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Weather App</h1>
+        <div class="search-box">
+            <input type="text" id="city" placeholder="Enter city name">
+            <button id="search-btn">Search</button>
+        </div>
+        <div class="weather-info">
+            <!-- weather details will appear hear -->
+        </div>
+    </div>
+
+    <script>
+
+        //select elements
+        const cityInput=document.getElementById("city");
+        const searchBtn=document.getElementById('search-btn');
+        const weatherInfo=document.querySelector(".weather-info");
+
+        //fetch weather data
+
+        const fetchWeather=async(city)=>{
+            const apiKey="6feb8471cc8a27b746a4c42ab91d76af";
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+            
+            try{
+                const response=await fetch(url);
+                if(!response.ok){
+                  throw new Error("City not found");
+                } 
+
+                const data=await response.json();
+                displayWeather(data);
+
+            }
+
+            catch(error){
+                weatherInfo.innerHTML=`<p>${error.message}</p>`;
+            }
+        };
+
+
+        const displayWeather=(data)=>{
+            const{name,main,weather}=data;
+
+            weatherInfo.innerHTML=`
+            <p><strong>City:</strong>${name}</p>
+            <p><strong>Temperature:</strong>${main.temp}°C</p>
+            <p><strong>Condition:</strong>${weather[0].description}</p>`;
+        };
+
+        //add event listener
+
+        searchBtn.addEventListener("click",()=>{
+            const city=cityInput.value.trim();
+            if(city){
+                fetchWeather(city);
+            }
+            else{
+                weatherInfo.innerHTML="<p>Please enter a city name</p>"
+            }
+        });
+
+
+    </script>
+</body>
+</html>
