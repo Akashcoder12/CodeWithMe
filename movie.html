@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            background-color: cadetblue;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .app {
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            background-color: lightblue;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        #movie-input {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #search-btn {
+            padding: 10px;
+            border: none;
+            background-color: goldenrod;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .movies-list {
+            margin-top: 20px;
+            
+        }
+
+        .movie-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .movie-item img {
+            width: 50px;
+            height: 75px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+
+        .movie-item .details {
+            text-align: left;
+        }
+
+        .movie-item .details h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .movie-item .details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Movies Search App</h1>
+        <div class="search-box">
+            <input type="text" id="movie-input" placeholder="Enter movie name">
+            <button id="search-btn">Search</button>
+        </div>
+
+        <div class="movies-list">
+            <!-- movie results will appear here -->
+        </div>
+    </div>
+    <script>
+        // 1. Select elements
+        const movieInput = document.getElementById("movie-input");
+        const searchBtn = document.getElementById("search-btn");
+        const movieList = document.querySelector(".movies-list");
+
+        // 2. Fetch movies from API
+        const fetchMovies = async (query) => {
+            const apiKey = "3f1501f9" // Replace with your valid OMDB API key
+            const url = `http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.Response === "True") {
+                    displayMovies(data.Search);
+                } else {
+                    movieList.innerHTML = `<p>${data.Error}</p>`;
+                }
+            } catch (error) {
+                movieList.innerHTML = `<p>Something went wrong. Please try again later.</p>`;
+            }
+        };
+
+        // 3. Display movies
+        const displayMovies = (movies) => {
+            movieList.innerHTML = "";
+
+            movies.forEach((movie) => {
+                const movieItem = document.createElement("div");
+                movieItem.classList.add("movie-item");
+
+                movieItem.innerHTML = `
+                    <img src="${
+                        movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/50x75"
+                    }" alt="${movie.Title}">
+                    <div class="details">
+                        <h3>${movie.Title}</h3>
+                        <p>Year: ${movie.Year}</p>
+                    </div>`;
+
+                movieList.appendChild(movieItem);
+            });
+        };
+
+        // 4. Add event listener
+        searchBtn.addEventListener("click", () => {
+            const query = movieInput.value.trim();
+            if (query) {
+                fetchMovies(query);
+            } else {
+                movieList.innerHTML = "<p>Please enter a movie name.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
